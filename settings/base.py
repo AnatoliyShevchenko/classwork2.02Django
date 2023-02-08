@@ -45,7 +45,8 @@ DJANGO_APPS = [
     'django.contrib.staticfiles',
 ]
 PROJECT_APPS = [
-    'main.apps.MainConfig'
+    'main.apps.MainConfig',
+    'abstracts.apps.AbstractsConfig'
 ]
 INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS
 

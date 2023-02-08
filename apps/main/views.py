@@ -5,10 +5,39 @@ from django.http import (
 )
 from django.views.generic import View
 
-from main.forms import PenForm, StoreForm, StoresForm
+from main.forms import PenForm, StoreConfigForm, StoresForm, ColorForm
+from abstracts.mixins import HttpResponseMixin
+from main.utils import convert_to_int
 
 # Create your views here.
-class PenView(View):
+class ColorView(HttpResponseMixin, View):
+    """View for creating color."""
+
+    form = ColorForm
+
+    def get(self, request: HttpRequest, *args, **kwargs):
+        return render(
+            request=request,
+            template_name='index.html',
+            context={
+                'ctx_form' : self.form()
+            }
+        )
+
+    def post(
+        self, 
+        request: HttpRequest,
+        *args: tuple, 
+        **kwargs: dict
+    ) -> HttpResponse:
+        form = self.form(request.POST)
+        return self.check_form_send_response(
+            request,
+            form
+        )
+
+
+class PenView(HttpResponseMixin, View):
     """Pen View."""
 
     form = PenForm
@@ -28,17 +57,20 @@ class PenView(View):
         *args: tuple, 
         **kwargs: dict
     ) -> HttpResponse:
+        # breakpoint()
         form = self.form(request.POST)
-        if not form.is_valid():
-            return HttpResponse('not ok')
-        form.save()
-        return HttpResponse('ok')
+        ink_colors = request.POST.getlist('ink_color')
+        request.POST['ink_color'] = convert_to_int(ink_colors)
+        return self.check_form_send_response(
+            request,
+            form
+        )
 
 
-class StoreView(View):
+class StoreConfigView(HttpResponseMixin, View):
     """Store View."""
 
-    form = StoreForm
+    form = StoreConfigForm
 
     def get(self, request: HttpRequest, *args, **kwargs):
         return render(
@@ -56,13 +88,13 @@ class StoreView(View):
         **kwargs: dict
     ) -> HttpResponse:
         form = self.form(request.POST)
-        if not form.is_valid():
-            return HttpResponse('not ok')
-        form.save()
-        return HttpResponse('ok')
+        return self.check_form_send_response(
+            request,
+            form
+        )
 
 
-class StoresView(View):
+class StoresView(HttpResponseMixin, View):
     """Stores View."""
 
     form = StoresForm
@@ -83,8 +115,7 @@ class StoresView(View):
         **kwargs: dict
     ) -> HttpResponse:
         form = self.form(request.POST)
-        if not form.is_valid():
-            return HttpResponse('not ok')
-        form.save()
-        return HttpResponse('ok')
-        
+        return self.check_form_send_response(
+            request,
+            form
+        )

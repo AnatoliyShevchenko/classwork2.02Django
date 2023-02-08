@@ -16,11 +16,17 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from apps.main.views import PenView, StoreView, StoresView
+from apps.main.views import (
+    PenView, 
+    StoreConfigView, 
+    StoresView, 
+    ColorView,
+)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('pens/', PenView.as_view()),
-    path('store/', StoreView.as_view()),
-    path('stores/', StoresView.as_view())
+    path('store/', StoreConfigView.as_view()),
+    path('stores/', StoresView.as_view()),
+    path('color/', ColorView.as_view())
 ]

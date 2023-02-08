@@ -1,19 +1,31 @@
 from django.db import models
 
 # Create your models here.
+class Color(models.Model):
+    """Create color for pen."""
+
+    color = models.CharField(
+        verbose_name='цвет чернил',
+        max_length=20,
+    )
+    color_title = models.CharField(
+        verbose_name='название цвета',
+        max_length=20,
+    )
+
+
+    class Meta:
+        ordering = ('-id',)
+        verbose_name = 'цвет'
+        verbose_name_plural = 'цвета'
+
+    def __str__(self) -> str:
+        return self.color_title
+
+
 class Pen(models.Model):
     """Class Pen."""
 
-    INK_COLORS_PATTERN = (
-        ('R','red'),
-        ('G','green'),
-        ('Y','yellow'),
-        ('B','blue'),
-        ('P','pink'),
-        ('O','orange'),
-        ('BL','black'),
-        ('PU','purple'),
-    )
     MATERIAL_PATTERNS = (
         ('I','IRON'),
         ('W','WOOD'),
@@ -21,23 +33,20 @@ class Pen(models.Model):
         ('R','RAGE'),
     )
 
-    ink_color = models.CharField(
-        choices=INK_COLORS_PATTERN,
+    ink_color = models.ManyToManyField(
+        to=Color,
         verbose_name='цвет чернил',
-        max_length=20,
-        default='blue'
     )
     material = models.CharField(
         choices=MATERIAL_PATTERNS,
         verbose_name='материал',
         max_length=20,
-        default='ACRIL'
     )
-    mass = models.IntegerField(
+    mass = models.PositiveIntegerField(
         verbose_name='масса изделия в граммах',
         default=50
     )
-    size = models.IntegerField(
+    size = models.PositiveIntegerField(
         verbose_name='длина изделия в сантиметрах',
         default=25
     )
@@ -46,6 +55,7 @@ class Pen(models.Model):
         verbose_name='название модели изделия',
         unique=True
     )
+
 
     class Meta:
         ordering = ('-id',)
@@ -62,8 +72,10 @@ class Stores(models.Model):
     title = models.CharField(
         max_length=50,
         unique=True,
+        blank=True,
         verbose_name='склад'
     )
+
 
     class Meta:
         ordering = ('-id',)
@@ -74,22 +86,26 @@ class Stores(models.Model):
         return self.title
 
 
-class Store(models.Model):
+class StoreConfig(models.Model):
     """Pens Store."""
 
     store_title = models.ForeignKey(
         to=Stores,
         on_delete=models.CASCADE,
+        blank=True,
         verbose_name='склад'
     )
-    count = models.IntegerField(
+    count = models.PositiveIntegerField(
         verbose_name='колличество изделий',
+        blank=True
     )
     product = models.ForeignKey(
         to=Pen,
         on_delete=models.CASCADE,
-        verbose_name='продукт'
+        verbose_name='продукт',
+        blank=True
     )
+
 
     class Meta:
         ordering = ('-id',)
